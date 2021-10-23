@@ -82,6 +82,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         showSpinner = true;
       });
 
+      email = "";
+      password = "";
+      confirmPassword = "";
+
       try {
         await auth
             .createUserWithEmailAndPassword(email: email, password: password)
