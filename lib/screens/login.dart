@@ -81,9 +81,6 @@ class _LoginScreenState extends State<LoginScreen> {
               MaterialPageRoute(builder: (context) => const Home()));
         });
 
-        email = "";
-        password = "";
-
         setState(() {
           showSpinner = false;
         });

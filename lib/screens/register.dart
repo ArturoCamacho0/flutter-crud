@@ -1,5 +1,6 @@
 import 'package:crud/screens/login.dart';
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 // ignore: import_of_legacy_library_into_null_safe
@@ -81,10 +82,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() {
         showSpinner = true;
       });
-
-      email = "";
-      password = "";
-      confirmPassword = "";
 
       try {
         await auth
