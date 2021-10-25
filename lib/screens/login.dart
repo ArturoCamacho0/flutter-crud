@@ -1,3 +1,4 @@
+// Importamos los paquetes y archivos que vamos a utilizar
 import 'package:crud/screens/home.dart';
 import 'package:crud/screens/register.dart';
 import 'package:flutter/material.dart';
@@ -5,15 +6,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
+// Creamos el punto de entrada de la pantalla
 class LoginScreen extends StatefulWidget {
+  // Creamos las variables para que podamos traer el correo y contraseña
   final Function(String? email, String? password)? onSubmitted;
 
   const LoginScreen({this.onSubmitted, Key? key}) : super(key: key);
   @override
+  // Creamos el estado del widget
   _LoginScreenState createState() => _LoginScreenState();
 }
 
+// Creamos el widget que nos dará nuestra interfaz
 class _LoginScreenState extends State<LoginScreen> {
+  // Creamos nuestras variables que vamos a utilizar
   final auth = FirebaseAuth.instance;
   bool showSpinner = false;
   late String email, password;
@@ -23,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
       widget.onSubmitted;
 
   @override
+  // Al iniciar asignamos en blanco los campos
   void initState() {
     super.initState();
     email = "";
@@ -32,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
     passwordError = null;
   }
 
+  // Igualmente ponemos en null los errores
   void resetErrorText() {
     setState(() {
       emailError = null;
@@ -39,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  // Estas son las validaciones que tenemos para nuestros campos
   bool validate() {
     resetErrorText();
 
@@ -63,16 +72,19 @@ class _LoginScreenState extends State<LoginScreen> {
     return isValid;
   }
 
+  // Esta funcion sera para cuando hagan submit en la parte del login
   void submit() async {
     if (validate()) {
       if (onSubmitted != null) {
         onSubmitted!(email, password);
       }
 
+      // En este estado cambiamos si se muestra el spinner en pantalla
       setState(() {
         showSpinner = true;
       });
 
+      // Con este bloque accedemos a firebase para poder identificarnos
       try {
         await auth
             .signInWithEmailAndPassword(email: email, password: password)
@@ -89,6 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
           showSpinner = false;
         });
         // ignore: invalid_return_type_for_catch_error
+        // Si algo sale mal mostraremos el error que ocurrió con un dialog
         showDialog<String>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
@@ -107,10 +120,13 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // Creamos el widget con el que vamos a crear nuestra interfaz
   @override
   Widget build(BuildContext context) {
+    // Con esta variable sabremos la medida de la pantalla para darle tamaño a ciertas cosas
     double screenHeight = MediaQuery.of(context).size.height;
 
+    // Con el modalprogress podremos mostrar una imagen de carga
     return ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: Scaffold(
@@ -136,6 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: screenHeight * .12),
                 InputField(
+                  // Asignamos los valores de los input a las variables
                   onChanged: (value) {
                     setState(() {
                       email = value;
@@ -154,6 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       password = value;
                     });
                   },
+                  // Cuando se realice la accion de iniciar sesion llamara a la funcion de arriba
                   onSubmitted: (val) => submit(),
                   labelText: "Contraseña",
                   errorText: passwordError,
@@ -177,7 +195,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 FormButton(
                   text: "Iniciar sesión",
-                  onPressed: submit,
+                  onPressed:
+                      submit, // Igualmente se llama la funcion para el login
                 ),
                 SizedBox(
                   height: screenHeight * .15,
@@ -186,6 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
+                      // Cuando sea nuevo puede ir a registrarse mandandolo con este boton
                       builder: (_) => const RegisterScreen(),
                     ),
                   ),
@@ -212,6 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+// Creamos el boton del formulario
 class FormButton extends StatelessWidget {
   final String text;
   final Function? onPressed;
@@ -238,6 +259,7 @@ class FormButton extends StatelessWidget {
   }
 }
 
+// Creamos los campos de texto que vamos a mostrar en nuestra pantalla
 class InputField extends StatelessWidget {
   final String? labelText;
   final Function(String)? onChanged;

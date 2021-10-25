@@ -1,3 +1,4 @@
+// Importamos los paquetes y archivos que vamos a estar utilizando
 import 'package:crud/screens/login.dart';
 import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
@@ -6,17 +7,21 @@ import 'package:flutter/services.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
+// Creamos nuestro punto de entrada a la pantalla
 class RegisterScreen extends StatefulWidget {
-  /// Callback for when this form is submitted successfully. Parameters are (email, password)
+  /// Creamos unos parametros para los campos del email y el password
   final Function(String? email, String? password)? onSubmitted;
 
   const RegisterScreen({this.onSubmitted, Key? key}) : super(key: key);
 
   @override
+  // Creamos el estado de nuestro widget
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
+// Creamos nuestro widget para la interfaz
 class _RegisterScreenState extends State<RegisterScreen> {
+  // Creamos nuestras variables para utilizarlas en esta pantalla
   final auth = FirebaseAuth.instance;
   bool showSpinner = false;
   late String email, password, confirmPassword;
@@ -24,6 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Function(String? email, String? password)? get onSubmitted =>
       widget.onSubmitted;
 
+  // Iniciamos el estado con las variables vacias
   @override
   void initState() {
     super.initState();
@@ -42,6 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
+  // Creamos las validaciones correspondientes
   bool validate() {
     resetErrorText();
 
@@ -73,20 +80,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return isValid;
   }
 
+  // Creamos la funcion para cuando hagamos submit después
   void submit() async {
     if (validate()) {
       if (onSubmitted != null) {
         onSubmitted!(email, password);
       }
 
+      // Mostramos la carga de pantalla
       setState(() {
         showSpinner = true;
       });
 
+      // Creamos a nuestro usuario luego de validar los campos
       try {
         await auth
             .createUserWithEmailAndPassword(email: email, password: password)
             .then((value) => {
+                  // Lo mandamos a la pagina del login
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (context) => const LoginScreen()))
                 });
@@ -98,6 +109,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           showSpinner = false;
         });
         // ignore: invalid_return_type_for_catch_error
+        // Si sucede algun error mostramos un dialog con el error
         showDialog<String>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
@@ -118,8 +130,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Tomamos las medidas de la pantalla para crear algunos elementos
     double screenHeight = MediaQuery.of(context).size.height;
 
+    // Comenzamos con el modal para cuando se encuentre cargando
     return ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: Scaffold(
@@ -145,6 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: screenHeight * .12),
                 InputField(
+                  // Le damos los valores a las variables con los que estan en los inputs
                   onChanged: (value) {
                     setState(() {
                       email = value;
@@ -186,12 +201,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 FormButton(
                   text: "Registrarse",
-                  onPressed: submit,
+                  onPressed: submit, // Cuando demos enter se subiran los datos
                 ),
                 SizedBox(
                   height: screenHeight * .125,
                 ),
                 TextButton(
+                  // Si ya tienen cuenta pueden regresar al inicio de sesión
                   onPressed: () => Navigator.pop(context),
                   child: RichText(
                     text: const TextSpan(
@@ -216,6 +232,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
+// Creamos el boton para los formularios
 class FormButton extends StatelessWidget {
   final String text;
   final Function? onPressed;
@@ -242,6 +259,7 @@ class FormButton extends StatelessWidget {
   }
 }
 
+// Creamos los elementos que vamos a utilizar en nuestro formulario
 class InputField extends StatelessWidget {
   final String? labelText;
   final Function(String)? onChanged;

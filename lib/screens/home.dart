@@ -1,26 +1,32 @@
+// Importamos los archivos y paquetes que vamos a utilizar
 import 'package:crud/screens/add.dart';
 import 'package:crud/screens/login.dart';
 import 'package:crud/screens/update.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 
+// Creamos el punto de entrada en nuestra pantalla
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
   @override
+  // Creamos el estado de nuestra aplicación
   _UsersList createState() => _UsersList();
 }
 
+// Creamos nuestra interfaz pero esta vez con estado
 class _UsersList extends State<Home> {
+  // Inicializamos firebase para utilizarlo
   var firebase = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
 
+  // Con esta funcion tomamos al usuario que inició sesión
   void initState() {
     super.initState();
     getCurrentUser();
   }
 
+  // Nos conectamos a firebase para traer al usuario que inició sesión
   void getCurrentUser() async {
     try {
       final user = await _auth.currentUser;
@@ -32,6 +38,7 @@ class _UsersList extends State<Home> {
     }
   }
 
+  // En esta función podemos borrar registros con su id
   delete(id) async {
     try {
       firebase
@@ -44,6 +51,7 @@ class _UsersList extends State<Home> {
     }
   }
 
+  // Creamos el widget completo de nuestra interfaz
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,6 +60,7 @@ class _UsersList extends State<Home> {
           width: double.infinity,
           child: Column(
             children: [
+              // En este boton cambiamos de pagina para agregar un registro
               ElevatedButton(
                 onPressed: () => Navigator.push(
                   context,
@@ -66,6 +75,7 @@ class _UsersList extends State<Home> {
                 ),
               ),
               const Divider(),
+              // Aqui es donde vamos a listar nuestros registros
               SingleChildScrollView(
                 physics: const ScrollPhysics(),
                 child: StreamBuilder<QuerySnapshot>(
@@ -75,6 +85,7 @@ class _UsersList extends State<Home> {
                       return ListView.builder(
                           shrinkWrap: true,
                           physics: const ScrollPhysics(),
+                          // Traemos los datos de la colección
                           itemCount: snapshot.data!.docs.length,
                           itemBuilder: (context, i) {
                             QueryDocumentSnapshot x = snapshot.data!.docs[i];
@@ -87,6 +98,7 @@ class _UsersList extends State<Home> {
                                     builder: (context) => Update(id: x.id)),
                               ),
                               trailing: TextButton(
+                                // Si presiona el boton para eliminar les mostramos un alertdialog
                                 onPressed: () => showDialog<String>(
                                   context: context,
                                   builder: (BuildContext context) =>
@@ -125,6 +137,7 @@ class _UsersList extends State<Home> {
               ),
             ],
           )),
+      // Creamos un boton para poder salir de nuestra sesión
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           _auth.signOut();
